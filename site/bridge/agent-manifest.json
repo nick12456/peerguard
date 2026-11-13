@@ -1,0 +1,10 @@
+{
+  "networks": [
+    {
+      "name": "peerguard"
+    }
+  ],
+  "actions": {
+    "version": 1
+  }
+}

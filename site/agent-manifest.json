@@ -1,0 +1,79 @@
+{
+  "brand": "PeerGuard",
+  "networks": [
+    {
+      "name": "peerguard",
+      "front_man": "peerguard_assistant",
+      "hocon": "./peerguard.network.json",
+      "description": "Checks whether an agentic website is safe to connect to, and explains what to fix.",
+      "tags": [
+        "agentified-website",
+        "security"
+      ],
+      "sample_queries": [
+        "Is https://example.netlify.app/ safe to connect to?",
+        "Explain the findings on the page and what to fix first.",
+        "Why is this site marked Don't connect?",
+        "Can you fix the other site for me?"
+      ]
+    }
+  ],
+  "llm_router": {
+    "base_url": "https://api.otari.ai/api/v1",
+    "mock": false,
+    "byok_router": "https://api.otari.ai/api/v1"
+  },
+  "allowed_peers": [],
+  "peer_policy": {
+    "mode": "closed",
+    "deny_origins": [],
+    "note": "Local agents and page-local actions only."
+  },
+  "agent_mcp": {
+    "protocol": "nsdeploy-agent-mcp/v1",
+    "network": "peerguard",
+    "front_man": "peerguard_assistant",
+    "available": false,
+    "reason": "This is a static bundle; a public MCP facade requires an application host."
+  },
+  "theme": {
+    "primary": "#17212b"
+  },
+  "linking": {
+    "protocol": "nsdeploy-link/v1",
+    "exports": [
+      {
+        "network": "peerguard",
+        "front_man": "peerguard_assistant",
+        "aliases": [
+          "peerguard",
+          "peerguard_assistant"
+        ],
+        "url": "peerguard"
+      }
+    ],
+    "imports": [],
+    "link_updates": {
+      "mode": "browser-local"
+    }
+  },
+  "deployment": {
+    "mode": "static",
+    "self_contained_runtime": true,
+    "browser_mock": false,
+    "direct_byok": true,
+    "direct_mcp_requires_cors": true,
+    "public_mcp_facade": false
+  },
+  "actions": {
+    "version": 1,
+    "module": "./site-actions.js",
+    "bridge": "./bridge/action-bridge.html",
+    "agentTools": [
+      "scan_site",
+      "get_report",
+      "get_scanned_text",
+      "add_review_finding"
+    ]
+  }
+}

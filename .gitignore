@@ -1,0 +1,5 @@
+node_modules/
+__pycache__/
+tests/e2e/last-run.json
+.DS_Store
+tests/e2e/screenshots/

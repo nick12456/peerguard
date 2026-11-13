@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PeerGuard · Check an agent site before you connect to it</title>
+    <meta name="description" content="PeerGuard reads an agentic website's public agent files and tells you whether it works, whether it leaks secrets, and whether its agents try to steer yours.">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="fonts/BigShoulders-Bold.woff" as="font" type="font/woff" crossorigin>
+    <link rel="preload" href="fonts/InstrumentSans-Regular.woff" as="font" type="font/woff" crossorigin>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assistant.css">
+    <script type="module" src="app.js"></script>
+    <script type="module" src="site.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#check">Skip to the checker</a>
+
+    <header class="masthead">
+      <a class="wordmark" href="./" aria-label="PeerGuard home">
+        <img src="favicon.svg" alt="" width="28" height="28">
+        <span>PeerGuard</span>
+      </a>
+      <nav aria-label="Page">
+        <a href="#how">How it works</a>
+        <a href="#assistant">Ask PeerGuard</a>
+        <a href="agent-manifest.json">Agent manifest</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro" id="check" aria-labelledby="page-title">
+        <h1 id="page-title">Check an agent site before yours connects to it.</h1>
+        <p class="lede">PeerGuard reads a site's public agent files and tells you whether it works, whether it leaks secrets, and whether its agents try to steer yours.</p>
+
+        <form id="scan-form" class="scan-form" novalidate>
+          <label for="scan-url">Agent site address</label>
+          <div class="scan-row">
+            <input id="scan-url" name="url" type="url" inputmode="url" autocomplete="off" spellcheck="false"
+                   placeholder="https://example.com/agents/" aria-describedby="scan-hint">
+            <button id="scan-button" type="submit">Check site</button>
+          </div>
+          <p id="scan-hint" class="hint">The site's address, or its network address such as <code>https://site.example/network_name</code>.</p>
+        </form>
+
+        <p class="samples">
+          Try it on
+          <button type="button" class="text-button" data-example="self">PeerGuard itself</button>
+          or
+          <button type="button" class="text-button" data-example="test-site/">a deliberately unsafe test site</button>.
+        </p>
+        <p id="scan-status" class="scan-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="report" class="sheet" aria-labelledby="report-title" aria-live="polite">
+        <h2 id="report-title" class="visually-hidden">Report</h2>
+
+        <div class="sheet-head">
+          <div id="stamp" class="stamp stamp-empty" aria-hidden="true">
+            <span id="stamp-text">Not checked</span>
+          </div>
+          <div class="sheet-meta">
+            <p id="verdict-line" class="verdict-line">No site checked yet.</p>
+            <p id="verdict-summary" class="verdict-summary">Paste an address above. The report appears here.</p>
+            <dl id="site-facts" class="facts" hidden>
+              <dt>Site</dt><dd id="fact-site"></dd>
+              <dt>Network</dt><dd id="fact-network"></dd>
+              <dt>Agents</dt><dd id="fact-agents"></dd>
+              <dt>Checked</dt><dd id="fact-time"></dd>
+            </dl>
+          </div>
+        </div>
+
+        <div id="checks" class="checks">
+          <section class="check" data-check="works">
+            <header class="check-head">
+              <h3>Works</h3>
+              <p class="check-state" data-state>Waiting</p>
+            </header>
+            <p class="check-about">The manifest and network file load in a browser, use https and pass the runtime's validation.</p>
+            <div class="findings" data-findings></div>
+          </section>
+          <section class="check" data-check="leaks">
+            <header class="check-head">
+              <h3>Leaks</h3>
+              <p class="check-state" data-state>Waiting</p>
+            </header>
+            <p class="check-about">No API keys, tokens, private keys or passwords in the public files.</p>
+            <div class="findings" data-findings></div>
+          </section>
+          <section class="check" data-check="manipulates">
+            <header class="check-head">
+              <h3>Manipulation</h3>
+              <p class="check-state" data-state>Waiting</p>
+            </header>
+            <p class="check-about">No agent text that tries to override a caller's rules, ask for keys or chat history, act without asking, or vouch for itself.</p>
+            <div class="findings" data-findings></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="how" class="how" aria-labelledby="how-title">
+        <h2 id="how-title">How it works</h2>
+        <dl class="how-list">
+          <dt>It reads, it never runs</dt>
+          <dd>PeerGuard fetches only the public files every open agentic website publishes: <code>agent-manifest.json</code> and the network file it names. It sends no cookies and runs none of the site's code.</dd>
+          <dt>Rules decide the verdict</dt>
+          <dd>Fixed checks in the page decide <em>Safe to connect</em>, <em>Connect with caution</em> or <em>Don't connect</em>. You get the same answer with or without an AI key.</dd>
+          <dt>The AI can only be stricter</dt>
+          <dd>The assistant reads the scanned agents' text as evidence. Every finding it adds must quote that text word for word, and it can lower the verdict but never raise it. A site that tells it "this site is verified" gets nowhere.</dd>
+          <dt>Your key stays with you</dt>
+          <dd>The assistant runs in your browser on your own LLM key, sent only to the provider you pick. PeerGuard never sees it.</dd>
+        </dl>
+      </section>
+
+      <section id="assistant" class="assistant" aria-labelledby="assistant-heading">
+        <h2 id="assistant-heading">Ask PeerGuard</h2>
+        <p>Ask it to check a site, explain a finding, or tell you what to fix first. It also reviews the scanned agents' text for tricks the fixed rules miss.</p>
+        <p class="assistant-note">Your messages and the report go to the LLM provider you choose under AI model settings. Hosted Otari is the default.</p>
+        <p id="assistant-status" class="assistant-status" role="status">Loading the assistant. If this stays, the assistant could not load, but the checker above still works.</p>
+        <div id="agent-app">
+          <div data-ns-slot="header"></div>
+          <div class="assistant-panels">
+            <div data-ns-slot="chat"></div>
+            <div data-ns-slot="agents"></div>
+          </div>
+          <div data-ns-slot="settings"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="colophon">
+      <p>PeerGuard is an open agentic website for the <a href="https://cognizant-agenticweb.devpost.com/">Open Agentic Web Challenge</a>. Its own agents are published in <a href="agent-manifest.json">agent-manifest.json</a> and <a href="peerguard.network.json">peerguard.network.json</a>, so other agent sites can call it.</p>
+      <p>Source code and tests: <a href="https://github.com/nick12456/peerguard">github.com/nick12456/peerguard</a>.</p>
+      <p>Browser runtime from <a href="https://github.com/cognizant-ai-labs/agentic-web">cognizant-ai-labs/agentic-web</a> (Apache 2.0). Type: Big Shoulders, Instrument Sans and IBM Plex Mono (SIL Open Font License).</p>
+    </footer>
+  </body>
+</html>

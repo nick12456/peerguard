@@ -1,0 +1,18 @@
+{
+  "protocol": "nsdeploy-link/v1",
+  "exports": [
+    {
+      "network": "peerguard",
+      "front_man": "peerguard_assistant",
+      "aliases": [
+        "peerguard",
+        "peerguard_assistant"
+      ],
+      "url": "peerguard"
+    }
+  ],
+  "imports": [],
+  "link_updates": {
+    "mode": "browser-local"
+  }
+}
